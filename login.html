@@ -1,0 +1,39 @@
+function sendOTP() {
+    let aadhar = document.getElementById("aadhar").value;
+    if (aadhar.length !== 12) { alert("Enter valid 12-digit Aadhaar number."); return; }
+
+    fetch("http://localhost:3000/auth/send-otp", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({aadhar})
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert("Your OTP: " + data.otp); // for demo only, later replace with SMS
+        document.getElementById("otpBox").style.display = "block";
+    });
+}
+
+function verifyLogin() {
+    let aadhar = document.getElementById("aadhar").value;
+    let otp = document.getElementById("otp").value;
+
+    fetch("http://localhost:3000/auth/verify-otp", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({aadhar, otp})
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.message === "Login successful") {
+            alert("Login Successful!");
+            currentUser = data.user;
+            document.getElementById("navProfile").style.display = "inline-block";
+            document.getElementById("navList").style.display = "inline-block";
+            showSection("profile");
+            loadJobs();
+        } else {
+            document.getElementById("error").style.display = "block";
+        }
+    });
+}

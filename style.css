@@ -1,0 +1,27 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+input, select, button {
+  margin: 5px 0;
+  padding: 8px;
+  width: 200px;
+}
+
+button {
+  width: 100px;
+  cursor: pointer;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+li {
+  background: #eee;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+}

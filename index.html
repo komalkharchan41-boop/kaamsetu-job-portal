@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>KaamSetu - Smart Job Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif;}
+
+        body {
+            background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1500&q=80')
+                        no-repeat center center/cover;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(0, 123, 255, 0.85);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+            /* Profile Icon Positioning Setup */
+            display: flex; 
+            justify-content: center;
+            align-items: center;
+            position: relative; 
+        }
+        
+        /* Style for the Profile Icon Button */
+        #navProfile {
+            background: none;
+            border: none;
+            color: white;
+            padding: 0;
+            cursor: pointer;
+            position: absolute; 
+            right: 20px; 
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
+        #navProfile i {
+            font-size: 30px; 
+            border: 2px solid white;
+            border-radius: 50%;
+            padding: 5px 8px; 
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+        }
+
+        #navProfile:hover i {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background: rgba(0, 86, 179, 0.9);
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: white;
+            padding: 14px 22px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        /* Hide the Profile button from the main nav bar */
+        #navProfile, #navList {
+            display: none; 
+        }
+        
+        nav button:not(#navProfile):hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+        }
+        
+        /* Job Seekers button display after login/save */
+        #navList[style*="inline-block"] {
+            display: inline-block !important;
+        }
+
+
+        .section {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
+            max-width: 800px;
+            margin: 20px auto;
+            backdrop-filter: blur(6px);
+            position: relative; 
+        }
+
+        h2 {
+            color: #007bff;
+            margin-bottom: 12px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        
+        .video-upload-container {
+            padding: 15px;
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .video-upload-container input[type="file"] {
+            border: none;
+            padding: 0;
+        }
+
+        button.primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 12px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button.primary:hover {
+            background: linear-gradient(135deg, #0056b3, #003d80);
+        }
+
+        .error {
+            display: none;
+            color: red;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        ul {
+            margin-left: 0;
+            list-style: none;
+            color: #333;
+        }
+
+        ul li {
+            margin: 8px 0;
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #007bff;
+            font-size: 15px;
+        }
+        
+        .profile-saved-alert {
+            position: fixed; 
+            top: 20px;
+            right: 20px;
+            background-color: #28a745; 
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .profile-data p {
+            margin-bottom: 8px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        .profile-data strong {
+            display: inline-block;
+            min-width: 120px;
+            color: #0056b3;
+        }
+        .video-player-container {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px dashed #007bff;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        @media(max-width: 600px) {
+            header { 
+                font-size: 20px; 
+                padding-right: 70px; 
+            }
+            nav button { font-size: 14px; padding: 10px 12px; }
+            #navProfile {
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>KaamSetu - Smart Job Platform</h1>
+        
+        <button id="navProfile" style="display:none;" onclick="showProfileView()">
+            <i class="fas fa-user-circle"></i> 
+        </button> 
+    </header>
+
+    <nav>
+        <button onclick="showSection('home')">Home</button>
+        <button onclick="showSection('loginType')">Login</button>
+        
+        <button id="navList" style="display:none;" onclick="showSection('jobSeekers')">Job Seekers</button>
+    </nav>
+
+    <div id="profileSavedAlert" class="profile-saved-alert">
+        Profile Updated Successfully!
+    </div>
+
+    <section id="home" class="section active">
+        <div class="card">
+            <h2>Welcome to KaamSetu</h2>
+            <p>Connecting local job seekers with employers in your community.</p>
+        </div>
+    </section>
+
+    <section id="loginType" class="section">
+        <div class="card">
+            <h2>Choose Login Type</h2>
+            <button class="primary" onclick="chooseType('job')">I want a Job</button>
+            <button class="primary" onclick="chooseType('hire')">I want to Hire</button>
+        </div>
+    </section>
+
+    <section id="location" class="section">
+        <div class="card">
+            <h2>Enter Your Location</h2>
+            <input type="text" id="locationInput" placeholder="Enter your location">
+            <button class="primary" onclick="checkLocation()">Continue</button>
+            <p id="locationError" class="error">Sorry, service not available in your area.</p>
+        </div>
+    </section>
+
+    <section id="login" class="section">
+        <div class="card">
+            <h2>Login</h2>
+            <input type="text" id="aadhar" maxlength="12" placeholder="Enter Aadhaar Number">
+            <button class="primary" onclick="sendOTP()">Send OTP</button>
+            <div id="otpBox" style="display:none;">
+                <input type="text" id="otp" maxlength="6" placeholder="Enter OTP">
+                <button class="primary" onclick="verifyLogin()">Login</button>
+            </div>
+            <p id="error" class="error">Invalid details. Try again.</p>
+        </div>
+    </section>
+
+    <section id="profile" class="section">
+        <div class="card">
+            <h2>Edit Your Profile</h2>
+            <input type="text" id="p_name" placeholder="Full Name">
+            <input type="text" id="p_skills" placeholder="Skills (e.g. Driving, Plumbing)">
+            <input type="number" id="p_age" placeholder="Age">
+            <input type="text" id="p_education" placeholder="Education">
+            <input type="text" id="p_location" placeholder="Location">
+            <input type="text" id="p_contact" placeholder="Contact Number">
+            <input type="text" id="p_jobtype" placeholder="Job Type (e.g. Sales Assistant)">
+            <input type="text" id="p_experience" placeholder="Experience">
+            <input type="email" id="p_email" placeholder="Gmail">
+
+            <div class="video-upload-container">
+                <label for="p_video">Upload Skill Showcase Video (Max 5MB):</label>
+                <input type="file" id="p_video" accept="video/*" onchange="updateVideoFileName(this)">
+                <p id="videoFileName" style="margin-top: 5px; font-size: 12px; color: #007bff;">No file selected.</p>
+            </div>
+            
+            <button class="primary" onclick="saveProfile()">Save Profile</button>
+        </div>
+    </section>
+    
+    <section id="profileView" class="section">
+        <div class="card">
+            <h2>Your Complete Resume</h2>
+            <div class="profile-data">
+                <p><strong>Full Name:</strong> <span id="view_name"></span></p>
+                <p><strong>Job Type:</strong> <span id="view_jobtype"></span></p>
+                <p><strong>Skills:</strong> <span id="view_skills"></span></p>
+                <p><strong>Age:</strong> <span id="view_age"></span></p>
+                <p><strong>Education:</strong> <span id="view_education"></span></p>
+                <p><strong>Location:</strong> <span id="view_location"></span></p>
+                <p><strong>Contact:</strong> <span id="view_contact"></span></p>
+                <p><strong>Experience:</strong> <span id="view_experience"></span></p>
+                <p><strong>Email:</strong> <span id="view_email"></span></p>
+            </div>
+
+            <div class="video-player-container">
+                <h3>Skill Video Preview</h3>
+                <video id="view_video" width="100%" height="240" controls style="border-radius: 8px; margin-top: 10px; background-color: #eee;"></video>
+                <p id="videoStatus" style="margin-top: 10px; font-weight: bold; color: #007bff;">No video uploaded yet.</p>
+            </div>
+            
+            <button class="primary" onclick="showSection('profile')">Edit Profile</button>
+        </div>
+    </section>
+
+
+    <section id="jobSeekers" class="section">
+        <div class="card">
+            <h2>Available Job Seekers (Data from Server)</h2>
+            <ul id="jobSeekersList">
+                <li>Please wait, loading data...</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer style="background: rgba(0,0,0,0.7); color: #fff; text-align: center; padding: 30px 15px; font-size: 14px; margin-top: 40px;">
+        <div style="max-width: 900px; margin: auto;">
+            <p><strong>About KaamSetu:</strong> KaamSetu is a community-driven platform that connects local job seekers with work providers to promote employment and skill development at the grassroots level.</p>
+            <p style="margin-top: 10px;">
+                📧 Email: <a href="mailto:support@kaamsetu.in" style="color: #4da6ff;">support@kaamsetu.in</a> |
+                📞 Phone: +91-9876543210
+            </p>
+            <p style="margin-top: 10px;">
+                <a href="#" style="color: #aaa; text-decoration: none;">Privacy Policy</a> |
+                <a href="#" style="color: #aaa; text-decoration: none;">Terms of Use</a>
+            </p>
+            <p style="margin-top: 10px;">
+                Follow us:
+                <a href="#" style="color:#4da6ff; margin: 0 8px;">Facebook</a>
+                <a href="#" style="color:#4da6ff; margin: 0 8px;">Twitter</a>
+                <a href="#" style="color:#4da6ff; margin: 0 8px;">LinkedIn</a>
+            </p>
+            <hr style="margin: 20px 0; border-color: #444;">
+            <p>© 2025 KaamSetu | Designed & Developed by <strong>Your Name / Team</strong></p>
+        </div>
+    </footer>
+
+    <script>
+        let generatedOTP = "";
+        
+        // --- API URL Setup ---
+        const API_BASE_URL = 'http://localhost:3000/api/jobseekers';
+        const AUTH_API_URL = 'http://localhost:3000/auth/send-otp';
+        const SAVE_PROFILE_API = 'http://localhost:3000/api/save-profile'; // NEW API
+        
+        // User Profile Data (stores the currently logged-in user's active/edited data)
+        let userProfileData = {
+            name: "", skills: "", age: "", education: "", location: "",
+            contact: "", jobtype: "", experience: "", email: "",
+            videoFile: null, 
+            videoFileName: "No file selected."
+        };
+
+        function showSection(id) {
+            document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+            
+            if (id === 'profile') {
+                loadProfileEditData();
+            }
+        }
+        
+        function showProfileView() {
+            loadProfileViewData(); 
+            
+            document.getElementById("view_name").textContent = userProfileData.name || 'Not set';
+            document.getElementById("view_jobtype").textContent = userProfileData.jobtype || 'Not set';
+            document.getElementById("view_skills").textContent = userProfileData.skills || 'Not set';
+            document.getElementById("view_age").textContent = userProfileData.age || 'Not set';
+            document.getElementById("view_education").textContent = userProfileData.education || 'Not set';
+            document.getElementById("view_location").textContent = userProfileData.location || 'Not set';
+            document.getElementById("view_contact").textContent = userProfileData.contact || 'Not set';
+            document.getElementById("view_experience").textContent = userProfileData.experience || 'Not set';
+            document.getElementById("view_email").textContent = userProfileData.email || 'Not set';
+
+            const videoElement = document.getElementById("view_video");
+            const videoStatus = document.getElementById("videoStatus");
+
+            if (userProfileData.videoFile) {
+                videoElement.src = URL.createObjectURL(userProfileData.videoFile);
+                videoStatus.textContent = `Video: ${userProfileData.videoFileName} ready to play.`;
+                videoElement.style.display = 'block';
+            } else {
+                videoElement.src = "";
+                videoStatus.textContent = "No skill showcase video uploaded yet.";
+            }
+
+            showSection('profileView');
+        }
+
+
+        function chooseType(type) {
+            if (type === 'job') {
+                showSection('location');
+            } else {
+                alert("Hiring feature coming soon!");
+            }
+        }
+
+        // --- UPDATED: Flexible Location Check ---
+        function checkLocation() {
+            let loc = document.getElementById("locationInput").value.trim();
+            
+            // Allow access if location field is filled (more flexible)
+            if (loc.length > 2) { 
+                showSection('login');
+                document.getElementById("locationError").style.display = "none";
+            } else {
+                document.getElementById("locationError").textContent = "Please enter a valid location.";
+                document.getElementById("locationError").style.display = "block";
+            }
+        }
+        
+        // --- OTP Function (Using Server API) ---
+        async function sendOTP() {
+            let aadhar = document.getElementById("aadhar").value;
+            if (aadhar.length !== 12) {
+                alert("Enter valid 12-digit Aadhaar number.");
+                return;
+            }
+
+            try {
+                const response = await fetch(AUTH_API_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ aadhar: aadhar })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    generatedOTP = data.otp.toString();
+                    alert("Your OTP: " + generatedOTP);
+                    document.getElementById("otpBox").style.display = "block";
+                } else {
+                    const error = await response.json();
+                    alert(`OTP Error: ${error.message || 'Server error'}`);
+                }
+            } catch (error) {
+                alert("Error connecting to OTP server. Is Node.js running?");
+            }
+        }
+
+        // --- Job Seekers List Population Function ---
+        async function populateJobSeekersList() {
+            // CHANGE 2: Used the specific ID for clarity
+            const listUl = document.getElementById('jobSeekersList');
+            listUl.innerHTML = '<li style="border-left: 3px solid #ffc107; color: #007bff;">Loading data from server (http://localhost:3000)...</li>'; 
+
+            try {
+                const response = await fetch(API_BASE_URL);
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                
+                const seekersData = await response.json();
+                
+                listUl.innerHTML = ''; 
+
+                if (seekersData.length === 0) {
+                    listUl.innerHTML = '<li>No job seekers found in the database.</li>';
+                    return;
+                }
+                
+                seekersData.forEach(seeker => {
+                    const li = document.createElement('li');
+                    
+                    // --- Data Reading Logic (Updated to check for generic 'Skills' for user-saved data) ---
+                    const name = seeker.Name || 'N/A';
+                    const jobType = seeker['Job type'] ? seeker['Job type'].trim() : 'N/A'; 
+                    const age = seeker.Age || 'N/A';
+                    const education = seeker['Education '] ? seeker['Education '].trim() : 'N/A';
+                    const location = seeker['Location '] ? seeker['Location '].trim() : 'N/A';
+                    const contact = seeker['Contact '] ? seeker['Contact '].trim() : 'N/A';
+                    const experience = seeker.Experience ? seeker.Experience.trim() : 'N/A';
+                    
+                    // Prioritize the generic 'Skills' field for user-saved data, fall back to a specific column name for CSV data
+                    const skill = seeker.Skills || (seeker['Sales Assistant '] ? seeker['Sales Assistant '].trim() : 'N/A'); 
+
+
+                    // Highlight manually added entries
+                    const extraStyle = seeker.source === 'user_saved' 
+                        ? 'background: #e6f7e6; border-left: 3px solid #28a745;' : '';
+                    
+                    const sourceTag = seeker.source === 'user_saved' ? ' (New Profile)' : '';
+
+                    li.setAttribute('style', li.getAttribute('style') + extraStyle);
+                    li.innerHTML = `
+                        <strong>${name}</strong>${sourceTag} | Job: ${jobType} | Skill: ${skill} | Age: ${age} | 
+                        Education: ${education} | Location: ${location} | Contact: ${contact} | Experience: ${experience}
+                    `;
+                    // --- END OF DATA READING ---
+                    
+                    listUl.appendChild(li);
+                });
+
+            } catch (error) {
+                console.error("Failed to fetch job seekers:", error);
+                listUl.innerHTML = `<li style="color:red; border-left: 3px solid red;">Error loading data. Is your Node.js server running on port 3000?</li>`;
+            }
+        }
+        
+        // --- Login Verification Function (Checks against Server Data) ---
+        async function verifyLogin() {
+            let otp = document.getElementById("otp").value;
+            let aadhar = document.getElementById("aadhar").value; 
+
+            if (otp === generatedOTP) {
+                // Fetch all data from the server to verify the Aadhaar
+                try {
+                    const response = await fetch(API_BASE_URL);
+                    const seekersData = await response.json();
+                    
+                    // Find the user by Aadhaar (Note: matching against 'Aadhaar' column in CSV data or 'aadhar' in user-saved data)
+                    const seeker = seekersData.find(s => s.Aadhaar === aadhar || s.aadhar === aadhar);
+
+                    if (seeker) {
+                        alert("Login Successful! Welcome to KaamSetu.");
+                        
+                        // Pre-filling Profile: Use generic 'Skills' if present (user-saved data), else use 'Sales Assistant ' (CSV data)
+                        userProfileData = {
+                            name: seeker.Name,
+                            skills: seeker.Skills || (seeker['Sales Assistant '] ? seeker['Sales Assistant '].trim() : ''),
+                            age: seeker.Age,
+                            education: seeker['Education '] ? seeker['Education '].trim() : '',
+                            location: seeker['Location '] ? seeker['Location '].trim() : '',
+                            contact: seeker['Contact '] ? seeker['Contact '].trim() : '',
+                            jobtype: seeker['Job type'] ? seeker['Job type'].trim() : '', 
+                            experience: seeker.Experience ? seeker.Experience.trim() : '',
+                            email: seeker.Gmail ? seeker.Gmail.trim() : '', 
+                            videoFile: userProfileData.videoFile, 
+                            videoFileName: "No file selected." 
+                        };
+
+                        // Save this pre-filled data to Local Storage
+                        const profileData = JSON.stringify(userProfileData);
+                        localStorage.setItem('kaamsetu_profile', profileData);
+                        
+                        document.getElementById("navProfile").style.display = "block"; 
+                        document.getElementById("navList").style.display = "inline-block";
+
+                        showSection("profile"); 
+                        
+                    } else {
+                        alert("Login Successful! Data not found. Please fill your new profile.");
+                        // Clear old profile data if any, and start fresh edit
+                        Object.keys(userProfileData).forEach(key => userProfileData[key] = (key === 'videoFileName') ? "No file selected." : (key === 'videoFile') ? null : '');
+                        document.getElementById("navProfile").style.display = "none"; 
+                        document.getElementById("navList").style.display = "none";
+                        showSection("profile");
+                    }
+                } catch(error) {
+                    console.error("Login verification failed (API error):", error);
+                    alert("Login successful, but failed to fetch data from the server. Please ensure the Node.js server is running.");
+                    showSection("profile");
+                }
+            } else {
+                document.getElementById("error").style.display = "block";
+            }
+        }
+
+        // --- UPDATED: Profile Save Function to send data to server ---
+        async function saveProfile() {
+            const videoInput = document.getElementById("p_video");
+            const maxSize = 5 * 1024 * 1024; 
+            
+            if (videoInput.files.length > 0) {
+                const file = videoInput.files[0];
+                if (file.size > maxSize) {
+                    alert("Video file size exceeds the 5MB limit.");
+                    return; 
+                }
+                userProfileData.videoFile = file;
+                userProfileData.videoFileName = file.name;
+            } else if (!userProfileData.videoFile) {
+                userProfileData.videoFileName = "No file selected.";
+            }
+
+            // 1. Gather all data, including the Aadhaar used for login
+            const aadharNumber = document.getElementById("aadhar").value; 
+            
+            if (aadharNumber.length !== 12) {
+                alert("Aadhaar number is required to save the profile. Please enter it in the Login section.");
+                return;
+            }
+            
+            // Update local user profile object
+            userProfileData.name = document.getElementById("p_name").value;
+            userProfileData.skills = document.getElementById("p_skills").value;
+            userProfileData.age = document.getElementById("p_age").value;
+            userProfileData.education = document.getElementById("p_education").value;
+            userProfileData.location = document.getElementById("p_location").value;
+            userProfileData.contact = document.getElementById("p_contact").value;
+            userProfileData.jobtype = document.getElementById("p_jobtype").value;
+            userProfileData.experience = document.getElementById("p_experience").value;
+            userProfileData.email = document.getElementById("p_email").value;
+
+            // 2. Prepare data object for the server
+            const dataToSend = {
+                aadhar: aadharNumber, 
+                name: userProfileData.name,
+                skills: userProfileData.skills,
+                age: userProfileData.age,
+                education: userProfileData.education,
+                location: userProfileData.location,
+                contact: userProfileData.contact,
+                jobtype: userProfileData.jobtype,
+                experience: userProfileData.experience,
+                email: userProfileData.email
+            };
+
+            try {
+                // 3. Send data to the new server endpoint
+                const response = await fetch(SAVE_PROFILE_API, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(dataToSend)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Success: Update Local Storage 
+                    const profileData = JSON.stringify(userProfileData);
+                    localStorage.setItem('kaamsetu_profile', profileData);
+
+                    // Show Alerts and Nav Buttons
+                    document.getElementById("navProfile").style.display = "block"; 
+                    document.getElementById("navList").style.display = "inline-block";
+                    
+                    const alertBox = document.getElementById("profileSavedAlert");
+                    alertBox.style.opacity = 1;
+                    setTimeout(() => { alertBox.style.opacity = 0; }, 3000); 
+
+                    // CHANGE 3: Clear the file input field after successful save
+                    document.getElementById("p_video").value = ""; 
+
+                    // 4. Show the Job Seekers List and refresh it
+                    showSection("jobSeekers");
+                    populateJobSeekersList(); 
+                } else {
+                    alert("Error saving profile to server: " + result.message);
+                }
+
+            } catch (error) {
+                console.error('Error in saveProfile:', error);
+                alert("Failed to connect to server. Check console for details.");
+            }
+        }
+        
+        function loadProfileEditData() {
+            const storedData = localStorage.getItem('kaamsetu_profile');
+            if (storedData) {
+                const profileData = JSON.parse(storedData);
+                
+                Object.assign(userProfileData, profileData);
+
+                document.getElementById("p_name").value = userProfileData.name || '';
+                document.getElementById("p_skills").value = userProfileData.skills || '';
+                document.getElementById("p_age").value = userProfileData.age || '';
+                document.getElementById("p_education").value = userProfileData.education || '';
+                document.getElementById("p_location").value = userProfileData.location || '';
+                document.getElementById("p_contact").value = userProfileData.contact || '';
+                document.getElementById("p_jobtype").value = userProfileData.jobtype || '';
+                document.getElementById("p_experience").value = userProfileData.experience || '';
+                document.getElementById("p_email").value = userProfileData.email || '';
+                
+                document.getElementById("videoFileName").textContent = userProfileData.videoFileName || "No file selected.";
+                
+                // If profile data exists in local storage, assume logged in and show icons
+                document.getElementById("navProfile").style.display = "block"; 
+                document.getElementById("navList").style.display = "inline-block";
+            }
+        }
+        
+        function loadProfileViewData() {
+            const storedData = localStorage.getItem('kaamsetu_profile');
+            if (storedData) {
+                const profileData = JSON.parse(storedData);
+                Object.assign(userProfileData, profileData);
+            }
+        }
+
+        function updateVideoFileName(input) {
+            const fileName = input.files.length > 0 ? input.files[0].name : "No file selected.";
+            document.getElementById("videoFileName").textContent = fileName;
+        }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfileEditData();
+            populateJobSeekersList(); 
+        });
+    </script>
+</body>
+</html>

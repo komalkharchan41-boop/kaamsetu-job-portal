@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KaamSetu - Smart Job Platform</title>
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif;}
+
+    body {
+      background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1500&q=80') 
+                  no-repeat center center/cover;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    header {
+      background: rgba(0, 123, 255, 0.85);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+      backdrop-filter: blur(5px);
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: rgba(0, 86, 179, 0.9);
+      flex-wrap: wrap;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: white;
+      padding: 14px 22px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    nav button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+    }
+
+    .section {
+      display: none;
+      padding: 30px;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    .active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
+      max-width: 800px;
+      margin: 20px auto;
+      backdrop-filter: blur(6px);
+    }
+
+    h2 {
+      color: #007bff;
+      margin-bottom: 12px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      padding: 12px 22px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 12px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    button.primary:hover {
+      background: linear-gradient(135deg, #0056b3, #003d80);
+    }
+
+    .error {
+      display: none;
+      color: red;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    ul {
+      margin-left: 20px;
+      color: #333;
+    }
+
+    ul li {
+      margin: 8px 0;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    @media(max-width: 600px) {
+      header { font-size: 20px; }
+      nav button { font-size: 14px; padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1>KaamSetu - A Smart Community Platform to connect local job seekers with work provider</h1>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <button onclick="showSection('home')">Home</button>
+    <button onclick="showSection('loginType')">Login</button>
+    <button id="navProfile" style="display:none;" onclick="showSection('profile')">Profile</button>
+    <button id="navList" style="display:none;" onclick="showSection('jobSeekers')">Job Seekers</button>
+  </nav>
+
+  <!-- Home Section -->
+  <section id="home" class="section active">
+    <div class="card">
+      <h2>Welcome to KaamSetu</h2>
+      <p>Connecting local job seekers with employers in your community.</p>
+    </div>
+  </section>
+
+  <!-- Login Type Section -->
+  <section id="loginType" class="section">
+    <div class="card">
+      <h2>Choose Login Type</h2>
+      <button class="primary" onclick="chooseType('job')">I want a Job</button>
+      <button class="primary" onclick="chooseType('hire')">I want to Hire</button>
+    </div>
+  </section>
+
+  <!-- Location Section (for Job seekers) -->
+  <section id="location" class="section">
+    <div class="card">
+      <h2>Enter Your Location</h2>
+      <input type="text" id="locationInput" placeholder="Enter your location">
+      <button class="primary" onclick="checkLocation()">Continue</button>
+      <p id="locationError" class="error">ervices are available only for Kathora Square area. Please select / type location and press "Confirm".</p>
+    </div>
+  </section>
+
+  <!-- Login Section -->
+  <section id="login" class="section">
+    <div class="card">
+      <h2>Login</h2>
+      <input type="text" id="aadhar" maxlength="12" placeholder="Enter Aadhaar Number">
+      <button class="primary" onclick="sendOTP()">Send OTP</button>
+      <div id="otpBox" style="display:none;">
+        <input type="text" id="otp" maxlength="6" placeholder="Enter OTP">
+        <button class="primary" onclick="verifyLogin()">Login</button>
+      </div>
+      <p id="error" class="error">Invalid details. Try again.</p>
+    </div>
+  </section>
+
+  <!-- Profile Section -->
+  <section id="profile" class="section">
+    <div class="card">
+      <h2>Your Profile</h2>
+      <input type="text" placeholder="Full Name">
+      <input type="text" placeholder="Skills (e.g. Driving, Plumbing)">
+      <input type="number" placeholder="Age">
+      <input type="text" placeholder="Education">
+      <input type="text" placeholder="Location">
+      <input type="text" placeholder="Contact Number">
+      <input type="text" placeholder="Job Type (e.g. Sales Assistant)">
+      <input type="text" placeholder="Experience">
+      <input type="email" placeholder="Gmail">
+      <button class="primary">Save Profile</button>
+    </div>
+  </section>
+
+  <!-- Job Seekers List Section -->
+  <section id="jobSeekers" class="section">
+    <div class="card">
+      <h2>Available Job Seekers (Sample Data)</h2>
+      <ul>
+        <li><strong>Ravi Kumar</strong> | Plumber | 28 | ITI | Delhi | 9876543210 | Full-time | 5 yrs | ravi@gmail.com</li>
+        <li><strong>Sunita Devi</strong> | Maid | 35 | 10th Pass | Jaipur | 9123456789 | Part-time | 8 yrs | sunita@mail.com</li>
+        <li><strong>Arjun Singh</strong> | Driver | 40 | 12th Pass | Lucknow | 9012345678 | Full-time | 10 yrs | arjun.singh@gmail.com</li>
+        <!-- ... rest of your job seeker list ... -->
+      </ul>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="background: rgba(0,0,0,0.7); color: #fff; text-align: center; padding: 30px 15px; font-size: 14px; margin-top: 40px;">
+    <div style="max-width: 900px; margin: auto;">
+      <p><strong>About KaamSetu:</strong> KaamSetu is a community-driven platform that connects local job seekers with work providers to promote employment and skill development at the grassroots level.</p>
+      <p style="margin-top: 10px;">
+        📧 Email: <a href="mailto:support@kaamsetu.in" style="color: #4da6ff;">support@kaamsetu.in</a> |
+        📞 Phone: +91-9876543210
+      </p>
+      <p style="margin-top: 10px;">
+        <a href="#" style="color: #aaa; text-decoration: none;">Privacy Policy</a> |
+        <a href="#" style="color: #aaa; text-decoration: none;">Terms of Use</a>
+      </p>
+      <p style="margin-top: 10px;">
+        Follow us:
+        <a href="#" style="color:#4da6ff; margin: 0 8px;">Facebook</a>
+        <a href="#" style="color:#4da6ff; margin: 0 8px;">Twitter</a>
+        <a href="#" style="color:#4da6ff; margin: 0 8px;">LinkedIn</a>
+      </p>
+      <hr style="margin: 20px 0; border-color: #444;">
+      <p>© 2025 KaamSetu | Designed & Developed by <strong>Your Name / Team</strong></p>
+    </div>
+  </footer>
+
+  <script>
+    let generatedOTP = "";
+
+    function showSection(id) {
+      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    function chooseType(type) {
+      if (type === 'job') {
+        showSection('location');
+      } else {
+        alert("Hiring feature coming soon!");
+      }
+    }
+
+    function checkLocation() {
+      let loc = document.getElementById("locationInput").value.trim().toLowerCase();
+      // Flexible check: must contain both 'kathora' and 'amravati'
+      if (loc.includes('kathora') && loc.includes('amravati')) {
+        showSection('login');
+        document.getElementById("locationError").style.display = "none";
+      } else {
+        document.getElementById("locationError").style.display = "block";
+      }
+    }
+
+    function sendOTP() {
+      let aadhar = document.getElementById("aadhar").value;
+      if (aadhar.length !== 12) {
+        alert("Enter valid 12-digit Aadhaar number.");
+        return;
+      }
+      generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+      alert("Your OTP: " + generatedOTP);
+      document.getElementById("otpBox").style.display = "block";
+    }
+
+    function verifyLogin() {
+      let otp = document.getElementById("otp").value;
+      if (otp === generatedOTP) {
+        alert("Login Successful!");
+        document.getElementById("navProfile").style.display = "inline-block";
+        document.getElementById("navList").style.display = "inline-block";
+        showSection("profile");
+      } else {
+        document.getElementById("error").style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>
